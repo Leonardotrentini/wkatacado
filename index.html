@@ -85,7 +85,7 @@ h1 em { font-style: normal; color: var(--gold); }
   <h1>Compre já direto<br><em>da fábrica, alta margem de lucro na revenda!</em></h1>
   <p class="hero-sub">Aqui você encontra as melhores peças do mercado, com <strong>alta qualidade e preço justo</strong>, garantindo sucesso na revenda.</p>
   <div class="hero-actions">
-    <a href="#" class="btn-primary" id="ctaBtn" onclick="rotacionarGrupo(event)">Entrar no Grupo Vip! →</a>
+    <a href="#" class="btn-primary" id="ctaBtn" target="_blank" onclick="fbq('track','Lead')">Entrar no Grupo Vip! →</a>
   </div>
   <div class="hero-stats">
     <div class="stat"><div class="stat-num">10</div><div class="stat-label">Peças mínimo de início</div></div>
@@ -95,18 +95,19 @@ h1 em { font-style: normal; color: var(--gold); }
 </section>
 
 <script>
-var grupos = [
-  'https://chat.whatsapp.com/JclOu0Do8Mr5NCTtAo8C6J?mode=gi_t',
-  'https://chat.whatsapp.com/GGGwQ2zVz4d1yMWOLbFjI7?mode=gi_t'
-];
-function rotacionarGrupo(e) {
-  e.preventDefault();
-  fbq('track', 'Lead');
-  var idx = parseInt(localStorage.getItem('wk_grupo') || '0');
-  var url = grupos[idx];
-  localStorage.setItem('wk_grupo', (idx + 1) % grupos.length);
-  window.open(url, '_blank');
-}
+(function() {
+  var grupos = [
+    'https://chat.whatsapp.com/JclOu0Do8Mr5NCTtAo8C6J?mode=gi_t',
+    'https://chat.whatsapp.com/GGGwQ2zVz4d1yMWOLbFjI7?mode=gi_t'
+  ];
+  try {
+    var idx = parseInt(localStorage.getItem('wk_idx') || '0');
+    document.getElementById('ctaBtn').href = grupos[idx];
+    localStorage.setItem('wk_idx', (idx + 1) % grupos.length);
+  } catch(e) {
+    document.getElementById('ctaBtn').href = grupos[0];
+  }
+})();
 </script>
 </body>
 </html>
