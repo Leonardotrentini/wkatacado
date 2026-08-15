@@ -4,6 +4,10 @@
     {
       "src": "index.html",
       "use": "@vercel/static"
+    },
+    {
+      "src": "src/js/vesto-group-cta.js",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
