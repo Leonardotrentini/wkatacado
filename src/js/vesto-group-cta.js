@@ -1,7 +1,7 @@
 (function () {
   var VESTO_KEY = 'vpk_4e7730570bc8e66166d6b3cdb23e5264';
   var ATTRIBUTION_URL = 'https://backend-production-7a466.up.railway.app/api/public/meta/attribution?key=' + encodeURIComponent(VESTO_KEY);
-  var GROUP_INVITE_URL = "https://chat.whatsapp.com/JPJImDpIRZGGeVMJedQgt9?s=cl&p=i&ilr=0";
+  var GROUP_INVITE_URL = "https://chat.whatsapp.com/DpjtAJ3IkPtJPuOvjGESC7?s=cl&p=i&mlu=4";
   var busy = false;
 
   function buildRef() {
