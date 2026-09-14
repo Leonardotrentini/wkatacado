@@ -6,11 +6,23 @@
       "use": "@vercel/static"
     },
     {
+      "src": "v2/index.html",
+      "use": "@vercel/static"
+    },
+    {
       "src": "src/js/vesto-group-cta.js",
       "use": "@vercel/static"
     }
   ],
   "routes": [
+    {
+      "src": "/v2",
+      "dest": "/v2/index.html"
+    },
+    {
+      "src": "/v2/",
+      "dest": "/v2/index.html"
+    },
     {
       "src": "/(.*)",
       "dest": "/$1"
