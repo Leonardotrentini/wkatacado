@@ -75,8 +75,17 @@
       .finally(function () { if (timer) clearTimeout(timer); });
   }
 
-  function openGroup(url) {
-    window.open(url || FALLBACK_GROUP_URL, '_blank', 'noopener,noreferrer');
+  function openGroup(url, preopened) {
+    var target = url || FALLBACK_GROUP_URL;
+    // Abre aba no clique (síncrono). window.open após await é bloqueado no desktop.
+    if (preopened && !preopened.closed) {
+      try {
+        preopened.location.href = target;
+        return;
+      } catch (_) {}
+    }
+    var win = window.open(target, '_blank');
+    if (!win) location.href = target;
   }
 
   document.addEventListener('click', function (e) {
@@ -86,6 +95,11 @@
     e.stopPropagation();
     if (e.stopImmediatePropagation) e.stopImmediatePropagation();
     busy = true;
+
+    // Precisa ser síncrono no handler do clique, senão o Chrome bloqueia o popup.
+    var preopened = null;
+    try { preopened = window.open('about:blank', '_blank'); } catch (_) { preopened = null; }
+
     var meta = readMeta();
     meta.clickAt = Date.now();
     meta.pageUrl = location.href;
@@ -104,11 +118,11 @@
       groupPromise,
     ])
       .then(function (results) {
-        openGroup(results[1]);
+        openGroup(results[1], preopened);
       })
       .catch(function (err) {
         console.error('[Vesto v2] Falha no CTA — abrindo fallback.', err);
-        openGroup(FALLBACK_GROUP_URL);
+        openGroup(FALLBACK_GROUP_URL, preopened);
       })
       .finally(function () { busy = false; });
   }, true);
