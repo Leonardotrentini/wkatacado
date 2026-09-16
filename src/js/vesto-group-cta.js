@@ -95,6 +95,7 @@
     if (!btn || busy) return;
     e.preventDefault();
     e.stopPropagation();
+    if (e.stopImmediatePropagation) e.stopImmediatePropagation();
     busy = true;
 
     // Abrir aba no clique síncrono evita bloqueio de popup no desktop.
