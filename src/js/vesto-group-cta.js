@@ -16,13 +16,16 @@
     try { return JSON.parse(sessionStorage.getItem('vesto_meta') || '{}'); } catch (_) { return {}; }
   }
 
-  function go(url) {
-    // Mesma aba = sem bloqueio de popup no PC e redirect mais rápido.
-    location.assign(url || FALLBACK_GROUP_URL);
+  function trackPixel(contactEventId, leadEventId) {
+    if (typeof fbq !== 'function') return;
+    try {
+      // Campanhas otimizam para Lead no site — dispara manualmente (EST está quebrado).
+      fbq('track', 'Lead', {}, { eventID: leadEventId });
+      fbq('track', 'Contact', {}, { eventID: contactEventId });
+    } catch (_) {}
   }
 
   function sendAttribution(meta, ref, contactEventId) {
-    // Não bloqueia o redirect — dispara em paralelo.
     try {
       fetch(ATTRIBUTION_URL, {
         method: 'POST',
@@ -70,13 +73,33 @@
       .finally(function () { if (timer) clearTimeout(timer); });
   }
 
+  function openGroup(url, preopened) {
+    var target = url || FALLBACK_GROUP_URL;
+    // Mantém a LP aberta para o pixel completar (como antes do rotacionador).
+    if (preopened && !preopened.closed) {
+      try {
+        preopened.opener = null;
+        preopened.location.href = target;
+        return true;
+      } catch (_) {}
+    }
+    var win = window.open(target, '_blank');
+    if (win) return true;
+    // Só navega na mesma aba se o popup for bloqueado — dá tempo do pixel sair.
+    setTimeout(function () { location.href = target; }, 400);
+    return false;
+  }
+
   document.addEventListener('click', function (e) {
     var btn = e.target && e.target.closest && e.target.closest('[data-vesto-group]');
     if (!btn || busy) return;
     e.preventDefault();
     e.stopPropagation();
-    if (e.stopImmediatePropagation) e.stopImmediatePropagation();
     busy = true;
+
+    // Abrir aba no clique síncrono evita bloqueio de popup no desktop.
+    var preopened = null;
+    try { preopened = window.open('about:blank', '_blank'); } catch (_) { preopened = null; }
 
     var meta = readMeta();
     meta.clickAt = Date.now();
@@ -84,17 +107,17 @@
     meta.userAgent = navigator.userAgent || '';
     var ref = buildRef();
     var contactEventId = 'vst_contact_' + ref.toLowerCase();
+    var leadEventId = 'vst_lead_' + ref.toLowerCase();
     try { sessionStorage.setItem('vesto_ref', ref); } catch (_) {}
     try { sessionStorage.setItem('vesto_contact_event_id', contactEventId); } catch (_) {}
+    try { sessionStorage.setItem('vesto_lead_event_id', leadEventId); } catch (_) {}
 
-    if (typeof fbq === 'function') {
-      try { fbq('track', 'Contact', {}, { eventID: contactEventId }); } catch (_) {}
-    }
-
+    trackPixel(contactEventId, leadEventId);
     sendAttribution(meta, ref, contactEventId);
 
     fetchNextGroup()
-      .then(function (url) { go(url); })
-      .catch(function () { go(FALLBACK_GROUP_URL); });
+      .then(function (url) { openGroup(url, preopened); })
+      .catch(function () { openGroup(FALLBACK_GROUP_URL, preopened); })
+      .finally(function () { busy = false; });
   }, true);
 })();
