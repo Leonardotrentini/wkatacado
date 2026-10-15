@@ -2,7 +2,7 @@
   var VESTO_KEY = 'vpk_4e7730570bc8e66166d6b3cdb23e5264';
   var ATTRIBUTION_URL = 'https://backend-production-7a466.up.railway.app/api/public/meta/attribution?key=' + encodeURIComponent(VESTO_KEY);
   var NEXT_GROUP_URL = '/api/next-group';
-  var FALLBACK_GROUP_URL = 'https://chat.whatsapp.com/HjCaVJiYZOg8C1hv32axwj?s=sw&p=i&mlu=4&ilr=4';
+  var FALLBACK_GROUP_URL = 'https://chat.whatsapp.com/Hxy9rQDAVMVLlXaCKR3lOJ?s=cl&p=i&mlu=4&ilr=4';
   var busy = false;
 
   function buildRef() {
